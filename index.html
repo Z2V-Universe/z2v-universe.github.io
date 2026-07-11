@@ -166,36 +166,62 @@
 <div class="container">
     <!-- Секция: Страны -->
     <h2 class="category-title">🌍 Государства</h2>
-    <div class="row">
-        <div class="col-md-4">
-            <div class="card wiki-card">
-                <div class="card-body">
-                    <h5 class="card-title">Никанда</h5>
-                    <p class="card-text">Государство на планете Медуза. В данный момент в стране идёт гражданская война...</p>
-                    <a href="articles/nikanda.md" class="btn btn-wiki">Открыть архив</a>
-                </div>
-            </div>
-        </div>
-        <!-- Добавляй новые страны сюда -->
+    <div id="countries-container" class="row">
+        <!-- Сюда скрипт сам добавит карточки -->
     </div>
 
     <!-- Секция: Персонажи -->
     <h2 class="category-title">👤 Персонажи</h2>
-    <div class="row">
-        <div class="col-md-4">
-            <div class="card wiki-card">
-                <div class="card-body">
-                    <h5 class="card-title">Нопик Зверь Ух</h5>
-                    <p class="card-text">Правитель Никанды, чьё имя вызывает трепет и страх в сердцах жителей...</p>
-                    <a href="articles/nopik.md" class="btn btn-wiki">Открыть архив</a>
-                </div>
-            </div>
-        </div>
+    <div id="characters-container" class="row">
+        <!-- Сюда скрипт сам добавит карточки -->
     </div>
 </div>
 
+<!-- Скрипт-Двигатель -->
+<script>
+    async function loadWikiData() {
+        try {
+            // 1. Загружаем данные из нашего JSON файла
+            const response = await fetch('data.json');
+            const data = await response-response.json();
+
+            // 2. Функция для создания карточки
+            const createCard = (item) => `
+                <div class="col-md-4">
+                    <div class="card wiki-card">
+                        <div class="card-body">
+                            <h5 class="card-title">${item.title}</h5>
+                            <p class="card-text">${item.description}</p>
+                            <a href="${item.link}" class="btn btn-wiki">Открыть архив</a>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // 3. Заполняем секцию стран
+            const countriesContainer = document.getElementById('countries-container');
+            data.countries.forEach(country => {
+                countriesContainer.innerHTML += createCard(country);
+            });
+
+            // 4. Заполняем секцию персонажей
+            const charactersContainer = document.getElementById('characters-container');
+            data.characters.forEach(char => {
+                charactersContainer.innerHTML += createCard(char);
+            });
+
+        } catch (error) {
+            console.error("Ошибка загрузки Вики:", error);
+            document.body.innerHTML += '<div class="alert alert-danger">Ошибка загрузки данных вселенной!</div>';
+        }
+    }
+
+    // Запускаем загрузку при старте страницы
+    loadWikiData();
+</script>
+
 <footer class="footer">
-    &copy; 2024 Z2V Universe. Все права защищены. <br>
+    &copy; 2026 Z2V Universe. Все права защищены. <br>
     Контент доступен по лицензии CC-BY-SA.
 </footer>
 
