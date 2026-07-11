@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ру">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>32B Wiki | Главная</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0a0a0a;
+            --bg-card: #161616;
+            --accent-gold: #ffd700;
+            --accent-blue: #00d4ff;
+            --text-main: #e0e0e0;
+            --text-dim: #888;
+            --glow: 0 0 15px rgba(255, 215, 0, 0.3);
+        }
+
+        body { 
+            background-color: var(--bg-dark); 
+            color: var(--text-main); 
+            font-family: 'Inter', sans-serif;
+            background-image: radial-gradient(circle at 50% 50%, #1a1a1a 0%, #0a0a0a 100%);
+            min-height: 100vh;
+        }
+
+        /* Навигация как на скриншоте */
+        .navbar-custom {
+            background: rgba(0, 0, 0, 0.8);
+            border-bottom: 1px solid #333;
+            padding: 15px 0;
+            backdrop-filter: blur(10px);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            color: var(--accent-gold) !important;
+            letter-spacing: 2px;
+            text-shadow: var(--glow);
+        }
+
+        /* Hero Section с атмосферой */
+        .hero-section {
+            padding: 80px 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-title {
+            font-size: 4rem;
+            font-weight: 700;
+            background: linear-gradient(to bottom, #fff, #888);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .hero-subtitle {
+            color: var(--accent-blue);
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            font-size: 0.9rem;
+            font-weight: 300;
+        }
+
+        /* Карточки в стиле "Ностальгия + Неон" */
+        .category-title {
+            font-size: 1.5rem;
+            border-left: 4px solid var(--accent-gold);
+            padding-left: 15px;
+            margin: 40px 0 20px;
+            color: #fff;
+        }
+
+        .wiki-card {
+            background: var(--bg-card);
+            border: 1px solid #222;
+            border-radius: 12px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            overflow: hidden;
+        }
+
+        .wiki-card:hover {
+            border-color: var(--accent-gold);
+            transform: translateY(-5px);
+            box-shadow: var(--glow);
+        }
+
+        .card-body { padding: 25px; }
+
+        .card-title {
+            color: var(--accent-gold);
+            font-size: 1.25rem;
+            margin-bottom: 15px;
+        }
+
+        .card-text {
+            color: var(--text-dim);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .btn-wiki {
+            background: transparent;
+            border: 1px solid var(--accent-blue);
+            color: var(--accent-blue);
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            padding: 8px 20px;
+            transition: 0.3s;
+        }
+
+        .btn-wiki:hover {
+            background: var-accent-blue;
+            color: #000;
+            box-shadow: 0 0 10px var(--accent-blue);
+        }
+
+        .footer {
+            margin-top: 100px;
+            padding: 40px;
+            text-align: center;
+            border-top: 1px solid #222;
+            color: #444;
+            font-size: 0.8rem;
+        }
+
+        /* Эффект звезд на фоне */
+        .stars {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            background: url('https://www.transparenttextures.com/patterns/stardust.png');
+            opacity: 0.3;
+        }
+    </style>
+</head>
+<body>
+
+<div class="stars"></div>
+
+<nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
+    <div class="container">
+        <a class="navbar-brand" href="#">32B WIKI</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link text-white-50" href="#">ВСЕ СТРАНЫ</a></li>
+                <li class="nav-item"><a class="nav-link text-white-50" href="#">ПЛАНЕТЫ</a></li>
+                <li class="nav-item"><a class="nav-link text-white-50" href="#">МИР 32B</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="hero-section">
+    <div class="container">
+        <h1 class="hero-title">32B WIKI</h1>
+        <p class="hero-subtitle">Свободная энциклопедия вселенной</p>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Секция: Страны -->
+    <h2 class="category-title">🌍 Государства</h2>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card wiki-card">
+                <div class="card-body">
+                    <h5 class="card-title">Никанда</h5>
+                    <p class="card-text">Государство на планете Медуза. В данный момент в стране идёт гражданская война...</p>
+                    <a href="articles/nikanda.md" class="btn btn-wiki">Открыть архив</a>
+                </div>
+            </div>
+        </div>
+        <!-- Добавляй новые страны сюда -->
+    </div>
+
+    <!-- Секция: Персонажи -->
+    <h2 class="category-title">👤 Персонажи</h2>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card wiki-card">
+                <div class="card-body">
+                    <h5 class="card-title">Нопик Зверь Ух</h5>
+                    <p class="card-text">Правитель Никанды, чьё имя вызывает трепет и страх в сердцах жителей...</p>
+                    <a href="articles/nopik.md" class="btn btn-wiki">Открыть архив</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer class="footer">
+    &copy; 2024 Z2V Universe. Все права защищены. <br>
+    Контент доступен по лицензии CC-BY-SA.
+</footer>
+
+</body>
+</html>
