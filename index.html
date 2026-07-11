@@ -183,7 +183,7 @@
         try {
             // 1. Загружаем данные из нашего JSON файла
             const response = await fetch('data.json');
-            const data = await response-response.json();
+            const data = await response.json();
 
             // 2. Функция для создания карточки
             const createCard = (item) => `
