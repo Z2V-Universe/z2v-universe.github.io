@@ -4,125 +4,80 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Z2V Universe Wiki</title>
-    
-    <!-- ПОДКЛЮЧЕНИЕ ВНЕШНЕГО СТИЛЯ -->
     <link rel="stylesheet" href="style.css">
-
+    
     <!-- Библиотеки для парсинга -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
 </head>
 <body>
 
-<div class="container">
-    <div id="main-view">
-        <h1>Z2V Universe Articles</h1>
-        <div id="articles-list">Загрузка вселенной...</div>
+    <div id="app">
+        <header>
+            <h1>Z2V Universe Wiki</h1>
+            <nav id="main-nav">
+                <!-- Сюда будут подгружаться ссылки на статьи -->
+                <a href="#/">Главная</a>
+            </lang>
+        </header>
+
+        <main id="content-area">
+            <!-- Сюда будет рендериться контент статьи -->
+            <div id="article-view">
+                <p>Выберите статью из списка или введите адрес в URL.</p>
+            </div>
+        </main>
     </div>
 
-    <div id="content-view">
-        <button class="back-btn" onclick="showList()">← Назад к списку</button>
-        <div id="article-body"></div>
-    </div>
-</div>
+    <script>
+        // Функция для загрузки статьи
+        async function loadArticle() {
+            const contentArea = document.getElementById('article-view');
+            const hash = window.location.hash.replace('#', '');
 
-<script>
-    // НАСТРОЙКИ (Замени на свои данные)
-    const REPO_OWNER = 'Z2V-Universe';
-    const REPO_NAME = 'z2v-universe.github.io';
-    const FOLDER_PATH = 'articles';
-
-    const listElement = document.getElementById('articles-list');
-    const mainView = document.getElementById('main-view');
-    const contentView = document.getElementById('content-view');
-    const articleBody = document.getElementById('article-body');
-
-    // 1. Функция получения списка файлов через GitHub API
-    async function fetchArticles() {
-        const apiUrl = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FOLDER_PATH}`;
-        
-        try {
-            const response = await fetch(apiUrl);
-            if (!response.ok) throw new_error('Не удалось загрузить список файлов');
-            
-            const files = await response.json();
-            listElement.innerHTML = ''; // Очистка
-
-            // Фильтруем только .md файлы
-            const mdFiles = files.filter(file => file.name.endsWith('.md'));
-
-            if (mdFiles.length === 0) {
-                listElement.innerHTML = 'Статьи пока не найдены.';
+            // Если мы на главной (пустой хэш)
+            if (!hash || hash === '/') {
+                contentArea.innerHTML = '<h1>Добро пожа пожаловать в Z2V</h1><p>Выберите статью в меню.</p>';
                 return;
             }
 
-            mdFiles.forEach(file => {
-                const card = document.createElement('div');
-                card.className = 'article-string';
-                card.innerHTML = `
-                    <div class="article-card" onclick="loadArticle('${file.download_url}')">
-                        <h2>${file.name.replace('.md', '')}</h2>
-                        <div class="tags">Нажми, чтобы прочитать</div>
-                    </div>
+            try {
+                // Пытаемся загрузить .md файл из папки articles
+                const response = await fetch(`articles/${hash}.md`);
+                
+                if (!response.ok) {
+                    throw new Error('Статья не найдена');
+                }
+
+                const mdText = await response.text();
+                
+                // Парсим YAML и Markdown
+                const parts = mdText.split('---');
+                const yamlContent = parts[1];
+                const markdownContent = parts.slice(2).join('---');
+
+                const metadata = jsyaml.load(yamlContent);
+                
+                // Рендерим заголовок и контент
+                contentArea.innerHTML = `
+                    <div class="metadata-badge">${metadata.role.toUpperCase()}</div>
+                    <h1>${metadata.name}</h1>
+                    <p class="location">📍 ${metadata.location}</p>
+                    <div class="tags">${metadata.tags ? metadata.tags.split(',').map(t => `<span>${t.trim()}</span>`).join('') : ''}</div>
+                    <hr>
+                    <div class="article-body">${marked.parse(markdownContent)}</div>
                 `;
-                listElement.appendChild(card);
-            });
-        } catch (err) {
-            listElement.innerHTML = 'Ошибка: ' + err.message;
-        }
-    }
 
-    // 2. Функция загрузки и рендеринга содержимого файла
-    async function loadArticle(url) {
-        try {
-            const response = await fetch(url);
-            const rawText = await response.text();
-
-            // Разделяем метаданные (YAML) и контент (Markdown)
-            const parts = rawText.split('---');
-            let yamlContent = '';
-            let markdownContent = '';
-
-            if (parts.length >= 3) {
-                // Если есть блок --- между метаданными и контентом
-                yamlContent = parts[1];
-                markdownContent = parts.slice(2).join('---');
-            } else {
-                markdownContent = rawText;
+            } catch (error) {
+                contentArea.innerHTML = `<h1>Ошибка</h1><p>${error.message}</p>`;
             }
-
-            // Парсим YAML
-            const metadata = jsyaml.load(yamlContent);
-
-            // Формируем HTML
-            let html = '';
-            if (metadata && metadata.name) {
-                html += `<h1>${metadata.name}</h1>`;
-                if (metadata.role) html += `<span class="metadata-badge">${metadata.role}</span>`;
-                if (metadata.location) html += `<p><i>${metadata.location}</i></p>`;
-            }
-            
-            html += `<div class="article-text">${marked.parse(markdownContent)}</div>`;
-
-            articleBody.innerHTML = html;
-            
-            // Переключаем виды
-            mainView.style.display = 'none';
-            contentView.style.display = 'block';
-
-        } catch (err) {
-            alert('Ошибка при чтении статьи: ' + err.message);
         }
-    }
 
-    function showList() {
-        mainView.style.display = 'block';
-        contentView.style.display = 'none';
-    }
-
-    // Запуск при загрузке страницы
-    fetchArticles();
-</script>
-
+        // Слушаем изменение хэша (переход по ссылкам)
+        window.addEventListener('hashchange', loadArticle);
+        
+        // Запускаем при первой загрузке страницы
+        window.addEventListener('load', loadArticle);
+    </script>
 </body>
 </html>
