@@ -1,71 +1,67 @@
 import os
+import json
 
-# Настройки
 OUTPUT_DIR = 'articles'
+LIST_FILE = 'articles_list.json'
 
-def create_markdown_article(raw_data):
+def create_article(raw_data):
     try:
         # Разделяем блоки
-        if '[METADATA_BLOCK]' not in raw_data or '[RAW_CONTENT]' not in raw_data:
-            print("❌ Ошибка: Не найдены блоки [METADATA_BLOCK] или [RAW_CONTENT]")
-            return
-
         parts = raw_data.split('[METADATA_BLOCK]')[1].split('[RAW_CONTENT]')
         metadata_part = parts[0]
         content_part = parts[1]
 
         # Парсим метаданные
         metadata = {}
+        for line in metadata_part.strip().split('\run'): # Исправлено
+            pass # (логика ниже)
+
+        # --- Упрощенная и надежная логика ---
+        metadata = {}
         for line in metadata_part.strip().split('\n'):
             if ':' in line:
-                key, val = line.split(':', 1)
-                metadata[key.strip()] = val.strip().replace('"', '')
+                k, v = line.split(':', 1)
+                metadata[k.strip()] = v.strip().replace('"', '')
 
-        # Формируем Markdown с YAML-заголовком
         md_content = "---\n"
-        for key, val in metadata.items():
-            md_content += f"{key}: \"{val}\"\n"
-        md_content += "---\n\n"
-        md_content += content_part.strip()
+        for k, v in metadata.items():
+            md_content += f"{k}: \"{v}\"\n"
+        md_content += "---\n\n" + content_part.strip()
 
-        # Создаем папку
         if not os.path.exists(OUTPUT_DIR):
             os.makedirs(OUTPUT_DIR)
 
-        # Имя файла на основе name (slug)
         slug = metadata.get('name', 'unknown').lower().replace(' ', '_').replace('-', '')
         file_path = os.path.join(OUTPUT_DIR, f"{slug}.md")
 
         with open(file_path, 'w', encoding='utf-8') as f:
             f.write(md_content)
 
+        # --- ОБНОВЛЯЕМ СПИСОК СТАТЕЙ ---
+        update_list_file()
+
         print(f"✅ Статья '{metadata.get('name')}' создана: {file_path}")
 
     except Exception as e:
-        print(  f"❌ Ошибка: {e}")
+        print(f"❌ Ошибка: {e}")
+
+def update_list_file():
+    # Сканируем папку articles и создаем JSON со списком имен
+    files = [f.replace('.md', '') for f in os.listdir(OUTPUT_DIR) if f.endswith('.md')]
+    with open(LIST_FILE, 'w', encoding='utf-8') as f:
+        json.dump(files, f, ensure_ascii=False)
+    print(f"📋 Список статей обновлен в {LIST_FILE}")
 
 if __name__ == "__main__":
-    # Сюда вставляй текст от нейросети
+    # Твой текст для теста
     INPUT_TEXT = """
 [METADATA_BLOCK]
-
 name: Никанда
-location: планета Медуза, материк Кфэранйом
-role: location
-tags: "history, war, monarchy, politics"
-
+location: планета Медуза
+role: organization
+tags: "war, history, state"
 
 [RAW_CONTENT]
-
-Никанда — государство, расположенное на планете Медуза на материке Кфэранйом. По своей форме правления страна представляет собой парламентскую монархию. Официальным языком является эвуюмский, а государственной валютой служит никандский крон (NKX). В стране действует свобода вероисповедания, а официальной религией является Катойконим.
-
-
-История Никанды разделена на несколько ключевых этапов. Первое существование государства пришлось на период с августа 2009 по февраль 2010 года, после чего страна была завоевана Крогандией и находилась в зависимости от неё в течение восьми лет. Возрождение независимой Никанды произошло 7 августа 2018 года в результате объединения никандских племён.
-
-
-Период правления Нопика Зверь Уха стал одним из самых мрачных в истории страны. Его правление характеризовалось жесткой тиранией, экономическим кризисом, массовыми протестами, репрессиями и публичными казнями, что привело к глубокому социальному расколу и потере лояльности даже среди патриотически настроенных граждан. По официальным данным следствия, правление Нопика завершилось его смертью, совершенной террористом по имени Де Сарт Слипер, известным как Антинопик, который также совершил ряд терактов на территории государства.
-
-
-После смерти Нопика власть переходила к его сыновьям — Зерою Зверю Уху и Найкайт-Нопиковски Зверю Уху, однако политическая ситуация оставалась нестабильной. В период после октября 2020 года, несмотря на пережитые глобальные катастрофы, такие как метеоритные дожди и тектонические сдвиги плит, Никанда смогла восстановить свою государственность благодаря своевременному использованию защитных щитов. В современный период страна вступила в НДСГДЗ, хотя в настоящее время в государстве всё ещё продолжаются военные действия в рамках гражданской войны.
+Никанда — это великое государство...
 """
-    create_markdown_article(INPUT_TEXT)
+    create_article(INPUT_TEXT)

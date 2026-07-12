@@ -40,29 +40,27 @@
         const dynamicLinksContainer = document.getElementById('dynamic-links');
 
         // 1. Функция загрузки списка всех статей для меню
-        async function loadNavigation() {
-            const apiUrl = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FOLDER_PATH}`;
+         async function loadNavigation() {
+            const listFile = 'articles_list.json';
             
             try {
-                const response = await fetch(apiUrl);
-                if (!response.ok) throw new Error('Не удалось загрузить список статей');
+                const response = await fetch(listFile);
+                if (!response.ok) throw new Error('Список статей не найден. Запусти factory.py');
                 
-                const files = await response.json();
-                const mdFiles = files.filter(file => file.name.endsWith('.md'));
+                const slugs = await response.json(); // Это просто массив строк: ["nikanda"]
 
-                dynamicLinksContainer.innerHTML = ''; // Очистка
+                dynamicLinksContainer.innerHTML = ''; 
 
-                mdFiles.forEach(file => {
-                    // Создаем slug из имени файла (убираем .md)
-                    const slug = file.name.replace('.md', '');
+                slugs.forEach(slug => {
                     const link = document.createElement('a');
                     link.href = `#${slug}`;
-                    link  link.innerText = ` | ${slug.replace('_', ' ')}`;
+                    link.innerText = ` | ${slug.replace('_', ' ')}`;
                     link.style.marginLeft = "10px";
                     dynamicLinksContainer.appendChild(link);
                 });
             } catch (err) {
                 console.error("Ошибка навигации:", err);
+                dynamicLinksContainer.innerHTML = '<span style="color:red">Ошибка загрузки меню</span>';
             }
         }
 
