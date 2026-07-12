@@ -1,229 +1,137 @@
 <!DOCTYPE html>
-<html lang="ру">
+<html langru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>32B Wiki | Главная</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
+    <title>Z2V Universe Wiki</title>
+    <!-- Подключаем библиотеки для парсинга -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
     <style>
-        :root {
-            --bg-dark: #0a0a0a;
-            --bg-card: #161616;
-            --accent-gold: #ffd700;
-            --accent-blue: #00d4ff;
-            --text-main: #e0e0e0;
-            --text-dim: #888;
-            --glow: 0 0 15px rgba(255, 215, 0, 0.3);
-        }
-
-        body { 
-            background-color: var(--bg-dark); 
-            color: var(--text-main); 
-            font-family: 'Inter', sans-serif;
-            background-image: radial-gradient(circle at 50% 50%, #1a1a1a 0%, #0a0a0a 100%);
-            min-height: 100vh;
-        }
-
-        /* Навигация как на скриншоте */
-        .navbar-custom {
-            background: rgba(0, 0, 0, 0.8);
-            border-bottom: 1px solid #333;
-            padding: 15px 0;
-            backdrop-filter: blur(10px);
-        }
-
-        .navbar-brand {
-            font-weight: 700;
-            color: var(--accent-gold) !important;
-            letter-spacing: 2px;
-            text-shadow: var(--glow);
-        }
-
-        /* Hero Section с атмосферой */
-        .hero-section {
-            padding: 80px 0;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hero-title {
-            font-size: 4rem;
-            font-weight: 700;
-            background: linear-gradient(to bottom, #fff, #888);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 10px;
-        }
-
-        .hero-subtitle {
-            color: var(--accent-blue);
-            text-transform: uppercase;
-            letter-spacing: 4px;
-            font-size: 0.9rem;
-            font-weight: 300;
-        }
-
-        /* Карточки в стиле "Ностальгия + Неон" */
-        .category-title {
-            font-size: 1.5rem;
-            border-left: 4px solid var(--accent-gold);
-            padding-left: 15px;
-            margin: 40px 0 20px;
-            color: #fff;
-        }
-
-        .wiki-card {
-            background: var(--bg-card);
-            border: 1px solid #222;
-            border-radius: 12px;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            overflow: hidden;
-        }
-
-        .wiki-card:hover {
-            border-color: var(--accent-gold);
-            transform: translateY(-5px);
-            box-shadow: var(--glow);
-        }
-
-        .card-body { padding: 25px; }
-
-        .card-title {
-            color: var(--accent-gold);
-            font-size: 1.25rem;
-            margin-bottom: 15px;
-        }
-
-        .card-text {
-            color: var(--text-dim);
-            font-size: 0.95rem;
-            line-height: 1.6;
-        }
-
-        .btn-wiki {
-            background: transparent;
-            border: 1px solid var(--accent-blue);
-            color: var(--accent-blue);
-            text-transform: uppercase;
-            font-size: 0.75rem;
-            font-weight: 700;
-            letter-spacing: 1px;
-            padding: 8px 20px;
-            transition: 0.3s;
-        }
-
-        .btn-wiki:hover {
-            background: var-accent-blue;
-            color: #000;
-            box-shadow: 0 0 10px var(--accent-blue);
-        }
-
-        .footer {
-            margin-top: 100px;
-            padding: 40px;
-            text-align: center;
-            border-top: 1px solid #222;
-            color: #444;
-            font-size: 0.8rem;
-        }
-
-        /* Эффект звезд на фоне */
-        .stars {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1;
-            background: url('https://www.transparenttextures.com/patterns/stardust.png');
-            opacity: 0.3;
-        }
+        body { font-family: 'Segoe_UI', sans-serif; background: #1a1a1a; color: #e0e0e0; line-height: 1.6; margin: 0; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        h1 { color: #fff; border-bottom: 2px solid #333; padding-bottom: 10px; }
+        .article-card { background: #2a2a2a; padding: 15px; margin-bottom: 15px; border-radius: 8px; cursor: pointer; transition: 0.3s; border-left: 5px solid #444; }
+        .article-card:hover { background: #333; border-left-color: #00ff88; transform: translateX(10px); }
+        .article-card h2 { margin: 0 0 5px 0; font-size: 1.2em; color: #00ff88; }
+        .tags { font-size: 0.8em; color: #888; }
+        #content-view { display: none; background: #2a2a2a; padding: 30px; border-radius: 10px; }
+        .back-btn { background: #444; color: #fff; border: none; padding: 10px 20px; cursor: pointer; border-radius: 5px; margin-bottom: 20px; }
+        .back-btn:hover { background: #666; }
+        .metadata-badge { display: inline-block; background: #444; padding: 2px 8px; border-radius: 4px; font-_size: 0.8em; margin-right: 5px; }
     </style>
 </head>
 <body>
 
-<div class="stars"></div>
-
-<nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
-    <div class="container">
-        <a class="navbar-brand" href="#">32B WIKI</a>
-        <div class="collapse navbar-collapse">
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item"><a class="nav-link text-white-50" href="#">ВСЕ СТРАНЫ</a></li>
-                <li class="nav-item"><a class="nav-link text-white-50" href="#">ПЛАНЕТЫ</a></li>
-                <li class="nav-item"><a class="nav-link text-white-50" href="#">МИР 32B</a></li>
-            </ul>
-        </div>
-    </div>
-</nav>
-
-<div class="hero-section">
-    <div class="container">
-        <h1 class="hero-title">32B WIKI</h1>
-        <p class="hero-subtitle">Свободная энциклопедия вселенной</p>
-    </div>
-</div>
-
 <div class="container">
-    <!-- Секция: Страны -->
-    <h2 class="category-title">🌍 Государства</h2>
-    <div id="countries-container" class="row">
-        <!-- Сюда скрипт сам добавит карточки -->
+    <div id="main-view">
+        <h1>Z2V Universe Articles</h1>
+        <div id="articles-list">Загрузка вселенной...</div>
     </div>
 
-    <!-- Секция: Персонажи -->
-    <h2 class="category-title">👤 Персонажи</h2>
-    <div id="characters-container" class="row">
-        <!-- Сюда скрипт сам добавит карточки -->
+    <div id="content-view">
+        <button class="back-btn" onclick="showList()">← Назад к списку</button>
+        <div id="article-body"></div>
     </div>
 </div>
 
-<!-- Скрипт-Двигатель -->
 <script>
-    async function loadWikiData() {
+    // НАСТРОЙКИ (Замени на свои данные)
+    const REPO_OWNER = 'Z2V-Universe';
+    const REPO_NAME = 'z2v-universe.github.io';
+    const FOLDER_PATH = 'articles';
+
+    const listElement = document.getElementById('articles-list');
+    const mainView = document.getElementById('main-view');
+    const contentView = document.getElementById('content-view');
+    const articleBody = document.getElementById('article-body');
+
+    // 1. Функция получения списка файлов через GitHub API
+    async function fetchArticles() {
+        const apiUrl = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FOLDER_PATH}`;
+        
         try {
-            // 1. Загружаем данные из нашего JSON файла
-            const response = await fetch('data.json');
-            const data = await response.json();
+            const response = await fetch(apiUrl);
+            if (!response.ok) throw new_error('Не удалось загрузить список файлов');
+            
+            const files = await response.json();
+            listElement.innerHTML = ''; // Очистка
 
-            // 2. Функция для создания карточки
-            const createCard = (item) => `
-                <div class="col-md-4">
-                    <div class="card wiki-card">
-                        <div class="card-body">
-                            <h5 class="card-title">${item.title}</h5>
-                            <p class="card-text">${item.description}</p>
-                            <a href="${item.link}" class="btn btn-wiki">Открыть архив</a>
-                        </div>
+            // Фильтруем только .md файлы
+            const mdFiles = files.filter(file => file.name.endsWith('.md'));
+
+            if (mdFiles.length === 0) {
+                listElement.innerHTML = 'Статьи пока не найдены.';
+                return;
+            }
+
+            mdFiles.forEach(file => {
+                const card = document.createElement('div');
+                card.className = 'article-string';
+                card.innerHTML = `
+                    <div class="article-card" onclick="loadArticle('${file.download_url}')">
+                        <h2>${file.name.replace('.md', '')}</h2>
+                        <div class="tags">Нажми, чтобы прочитать</div>
                     </div>
-                </div>
-            `;
-
-            // 3. Заполняем секцию стран
-            const countriesContainer = document.getElementById('countries-container');
-            data.countries.forEach(country => {
-                countriesContainer.innerHTML += createCard(country);
+                `;
+                listElement.appendChild(card);
             });
-
-            // 4. Заполняем секцию персонажей
-            const charactersContainer = document.getElementById('characters-container');
-            data.characters.forEach(char => {
-                charactersContainer.innerHTML += createCard(char);
-            });
-
-        } catch (error) {
-            console.error("Ошибка загрузки Вики:", error);
-            document.body.innerHTML += '<div class="alert alert-danger">Ошибка загрузки данных вселенной!</div>';
+        } catch (err) {
+            listElement.innerHTML = 'Ошибка: ' + err.message;
         }
     }
 
-    // Запускаем загрузку при старте страницы
-    loadWikiData();
-</script>
+    // 2. Функция загрузки и рендеринга содержимого файла
+    async function loadArticle(url) {
+        try {
+            const response = await fetch(url);
+            const rawText = await response.text();
 
-<footer class="footer">
-    &copy; 2026 Z2V Universe. Все права защищены. <br>
-    Контент доступен по лицензии CC-BY-SA.
-</footer>
+            // Разделяем метаданные (YAML) и контент (Markdown)
+            const parts = rawText.split('---');
+            let yamlContent = '';
+            let markdownContent = '';
+
+            if (parts.length >= 3) {
+                // Если есть блок --- между метаданными и контентом
+                yamlContent = parts[1];
+                markdownContent = parts.slice(2).join('---');
+            } else {
+                markdownContent = rawText;
+            }
+
+            // Парсим YAML
+            const metadata = jsyaml.load(yamlContent);
+
+            // Формируем HTML
+            let html = '';
+            if (metadata && metadata.name) {
+                html += `<h1>${metadata.name}</h1>`;
+                if (metadata.role) html += `<span class="metadata-badge">${metadata.role}</span>`;
+                if (metadata.location) html += `<p><i>${metadata.location}</i></p>`;
+            }
+            
+            html += `<div class="article-text">${marked.parse(markdownContent)}</div>`;
+
+            articleBody.innerHTML = html;
+            
+            // Переключаем виды
+            mainView.style.display = 'none';
+            contentView.style.display = 'block';
+
+        } catch (err) {
+            alert('Ошибка при чтении статьи: ' + err.message);
+        }
+    }
+
+    function showList() {
+        mainView.style.display = 'block';
+        contentView.style.display = 'none';
+    }
+
+    // Запуск при загрузке страницы
+    fetchArticles();
+</script>
 
 </body>
 </html>
