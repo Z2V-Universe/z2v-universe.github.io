@@ -16,68 +16,112 @@
         <header>
             <h1>Z2V Universe Wiki</h1>
             <nav id="main-nav">
-                <!-- Сюда будут подгружаться ссылки на статьи -->
                 <a href="#/">Главная</a>
-            </lang>
+                <!-- Сюда JavaScript будет динамически добавлять ссылки на статьи -->
+                <div id="dynamic-links" style="display: inline;"></div>
+            </nav>
         </header>
 
         <main id="content-area">
-            <!-- Сюда будет рендериться контент статьи -->
             <div id="article-view">
-                <p>Выберите статью из списка или введите адрес в URL.</p>
+                <h1>Добро пожаловать в Z2V</h1>
+                <p>Выберите статью в меню выше, чтобы начать исследование вселенной.</p>
             </div>
         </main>
     </div>
 
     <script>
-        // Функция для загрузки статьи
+        // ПУТЬ К ТВОЕМУ РЕПОЗИТОРИЮ (Замени на свой, если нужно)
+        const REPO_OWNER = 'Z2V-Universe'; 
+        const REPO_NAME = 'z2v-universe.github.io';
+        const FOLDER_PATH = 'articles';
+
+        const contentArea = document.getElementById('article-view');
+        const dynamicLinksContainer = document.getElementById('dynamic-links');
+
+        // 1. Функция загрузки списка всех статей для меню
+        async function loadNavigation() {
+            const apiUrl = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FOLDER_PATH}`;
+            
+            try {
+                const response = await fetch(apiUrl);
+                if (!response.ok) throw new Error('Не удалось загрузить список статей');
+                
+                const files = await response.json();
+                const mdFiles = files.filter(file => file.name.endsWith('.md'));
+
+                dynamicLinksContainer.innerHTML = ''; // Очистка
+
+                mdFiles.forEach(file => {
+                    // Создаем slug из имени файла (убираем .md)
+                    const slug = file.name.replace('.md', '');
+                    const link = document.createElement('a');
+                    link.href = `#${slug}`;
+                    link  link.innerText = ` | ${slug.replace('_', ' ')}`;
+                    link.style.marginLeft = "10px";
+                    dynamicLinksContainer.appendChild(link);
+                });
+            } catch (err) {
+                console.error("Ошибка навигации:", err);
+            }
+        }
+
+        // 2. Функция загрузки и рендеринга конкретной статьи
         async function loadArticle() {
-            const contentArea = document.getElementById('article-view');
             const hash = window.location.hash.replace('#', '');
 
-            // Если мы на главной (пустой хэш)
             if (!hash || hash === '/') {
-                contentArea.innerHTML = '<h1>Добро пожа пожаловать в Z2V</h1><p>Выберите статью в меню.</p>';
+                contentArea.innerHTML = '<h1>Главная</h1><p>Выберите статью в меню.</p>';
                 return;
             }
 
             try {
-                // Пытаемся загрузить .md файл из папки articles
+                // Пытаемся загрузить файл из папки articles
                 const response = await fetch(`articles/${hash}.md`);
-                
-                if (!response.ok) {
-                    throw new Error('Статья не найдена');
-                }
+                if (!response.ok) throw new Error('Статья не найдена');
 
                 const mdText = await response.text();
                 
-                // Парсим YAML и Markdown
+                // Парсим YAML (метаданные) и Markdown
                 const parts = mdText.split('---');
-                const yamlContent = parts[1];
-                const markdownContent = parts.slice(2).join('---');
+                let yamlContent = '';
+                let markdownContent = '';
+
+                if (parts.length >= 3) {
+                    yamlContent = parts[1];
+                    markdownContent = parts.slice(2).join('---');
+                } else {
+                    markdownContent = mdText;
+                }
 
                 const metadata = jsyaml.load(yamlContent);
+
+                // Формируем красивый HTML
+                let html = '';
+                if (metadata) {
+                    if (metadata.role) html += `<span class="metadata-string">${metadata.role.toUpperCase()}</span>`;
+                    if (metadata.name) html += `<h1>${metadata.name}</h1>`;
+                    if (metadata.location) html += `<p class="location">📍 ${metadata.location}</p>`;
+                    if (metadata.tags) {
+                        const tagsHtml = metadata.tags.split(',').map(t => `<span class="tag">${t.trim()}</span>`).join('');
+                        html += `<div class="tags">${tagsHtml}</div>`;
+                    }
+                }
                 
-                // Рендерим заголовок и контент
-                contentArea.innerHTML = `
-                    <div class="metadata-badge">${metadata.role.toUpperCase()}</div>
-                    <h1>${metadata.name}</h1>
-                    <p class="location">📍 ${metadata.location}</p>
-                    <div class="tags">${metadata.tags ? metadata.tags.split(',').map(t => `<span>${t.trim()}</span>`).join('') : ''}</div>
-                    <hr>
-                    <div class="article-body">${marked.parse(markdownContent)}</div>
-                `;
+                html += `<hr><div class="article-body">${marked.parse(markdownContent)}</div>`;
+                contentArea.innerHTML = html;
 
             } catch (error) {
                 contentArea.innerHTML = `<h1>Ошибка</h1><p>${error.message}</p>`;
             }
         }
 
-        // Слушаем изменение хэша (переход по ссылкам)
+        // Слушатели событий
         window.addEventListener('hashchange', loadArticle);
-        
-        // Запускаем при первой загрузке страницы
-        window.addEventListener('load', loadArticle);
+        window.addEventListener('load', () => {
+            loadNavigation(); // Сначала грузим меню
+            loadArticle();   // Потом грузим статью (если есть хэш)
+        });
     </script>
 </body>
 </html>
